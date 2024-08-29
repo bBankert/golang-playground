@@ -1,9 +1,9 @@
 package main
 
 import (
-	investment_calc "example.com/playground/investment_calculator"
+	"example.com/playground/profit_calculator"
 )
 
 func main() {
-	investment_calc.CalculateInvestment()
+	profit_calculator.CalculateProfit()
 }

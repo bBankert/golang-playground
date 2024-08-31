@@ -55,7 +55,6 @@ func validateInputs(revenue, expenses, taxRate float64) (valid bool, errorMessag
 		errorMessage = "Invalid revenue amount, must be greater than 0"
 	}
 
-	fmt.Printf("Testing %#v\n", valid)
 	if expenses <= 0 && valid {
 		valid = false
 		errorMessage = "Invalid expenses amount, must be greater than 0"

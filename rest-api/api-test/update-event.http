@@ -1,0 +1,10 @@
+PUT http://localhost:8080/events/2
+content-type: application/json
+Authorization: replace-me
+
+{
+    "name": "some new name 2",
+    "description": "some new description 2",
+    "location": "some new location 2",
+    "date": "1990-01-03T00:00:00Z"
+}

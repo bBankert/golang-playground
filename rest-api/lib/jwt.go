@@ -2,10 +2,10 @@ package lib
 
 import (
 	"errors"
-	"os"
 	"strconv"
 	"time"
 
+	"example.com/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -18,7 +18,7 @@ func GenerateToken(email, userId string) (string, error) {
 			"exp":    time.Now().Add(time.Minute * 5).Unix(),
 		})
 
-	return token.SignedString([]byte(os.Getenv("TOKEN_SECRET")))
+	return token.SignedString([]byte(config.Config.JwtSecretKey))
 }
 
 func ValidateToken(token string) (int64, error) {
@@ -29,7 +29,7 @@ func ValidateToken(token string) (int64, error) {
 			return nil, errors.New("invalid token signing method")
 		}
 
-		return []byte(os.Getenv("TOKEN_SECRET")), nil
+		return []byte(config.Config.JwtSecretKey), nil
 	})
 
 	if err != nil {

@@ -1,19 +1,28 @@
 package main
 
 import (
+	"fmt"
+
 	"example.com/config"
-	"example.com/routes"
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db := config.InitializeDatabase()
 
-	defer config.CloseDatabaseConnection(db)
+	err := config.LoadConfiguration()
 
-	httpServer := gin.Default()
+	if err != nil {
+		panic(fmt.Sprintf("Unable to load configuration, error: %v\n", err.Error()))
+	}
 
-	routes.RegisterRoutes(httpServer, db)
+	app, err := BuildServer()
 
-	httpServer.Run(":8080")
+	if err != nil {
+		panic(fmt.Sprintf("Unable to build server, error: %v\n", err.Error()))
+	}
+
+	err = app.Start(config.Config.HttpPort)
+
+	if err != nil {
+		panic(fmt.Sprintf("Unable to run server, error: %v\n", err.Error()))
+	}
 }

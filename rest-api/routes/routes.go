@@ -1,54 +1,16 @@
 package routes
 
 import (
-	"database/sql"
-
-	"example.com/controllers"
 	interfaces "example.com/interfaces/controllers"
 	"example.com/middlewares"
-	"example.com/repositories"
-	"example.com/services"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(server *gin.Engine, db *sql.DB) {
-
-	eventsController, registrationsController, usersController := setupDependencies(db)
-
-	registerEventRoutes(server, eventsController)
-	registerUserRoutes(server, usersController)
-	registerRegistrationRoutes(server, registrationsController)
+func NewHttpServer() *gin.Engine {
+	return gin.Default()
 }
 
-func setupDependencies(db *sql.DB) (
-	interfaces.IEventsController,
-	interfaces.IRegistrationsController,
-	interfaces.IUsersController,
-) {
-	//TODO: See if we can move these to a dependency injection section
-	//repositories
-	registrationRepository := repositories.NewRegistrationRepository(db)
-	userRepository := repositories.NewUserRepository(db)
-	eventRepository := repositories.NewEventRepository(db)
-
-	//services
-	eventService := services.NewEventService(eventRepository)
-	userService := services.NewUserService(userRepository)
-	registrationService := services.NewRegistrationService(
-		registrationRepository,
-		eventRepository)
-
-	//controllers
-	eventsController := controllers.NewEventsController(eventService)
-	userController := controllers.NewUsersController(userService)
-	registrationController := controllers.NewRegistrationsController(registrationService)
-
-	return eventsController, registrationController, userController
-
-}
-
-func registerEventRoutes(server *gin.Engine, eventsController interfaces.IEventsController) {
-
+func RegisterEventRoutes(server *gin.Engine, eventsController interfaces.IEventsController) {
 	unauthenticatedEventEndpoints := server.Group("/events")
 	{
 		unauthenticatedEventEndpoints.GET("", eventsController.GetEvents)
@@ -65,14 +27,12 @@ func registerEventRoutes(server *gin.Engine, eventsController interfaces.IEvents
 	}
 }
 
-func registerUserRoutes(server *gin.Engine, userController interfaces.IUsersController) {
-
+func RegisterUserRoutes(server *gin.Engine, userController interfaces.IUsersController) {
 	server.POST("/signup", userController.CreateUser)
 	server.POST("/login", userController.Login)
 }
 
-func registerRegistrationRoutes(server *gin.Engine, registrationsController interfaces.IRegistrationsController) {
-
+func RegisterRegistrationRoutes(server *gin.Engine, registrationsController interfaces.IRegistrationsController) {
 	registationRoutes := server.Group("/events/:id")
 	{
 		registationRoutes.Use(middlewares.Authenticate)

@@ -113,7 +113,9 @@ func (controller EventsController) UpdateEvent(context *gin.Context) {
 	requestingUserId := context.GetInt64("userId")
 
 	if savedEvent.UserId != requestingUserId {
-		context.Status(http.StatusUnauthorized)
+		context.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User unable to update event",
+		})
 		return
 	}
 
@@ -151,7 +153,9 @@ func (controller EventsController) DeleteEvent(context *gin.Context) {
 	requestingUserId := context.GetInt64("userId")
 
 	if savedEvent.UserId != requestingUserId {
-		context.Status(http.StatusUnauthorized)
+		context.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User unable to update event",
+		})
 		return
 	}
 

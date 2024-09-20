@@ -25,6 +25,10 @@ jobs:
       working-directory: ./rest-api
       run: go build -v ./...
 
+    - name: Install Mockery
+      working-directory: ./rest-api
+      run: go install github.com/vektra/mockery/v2@v2.46.0
+
     - name: Generate mocks
       working-directory: ./rest-api
       run: mockery --all

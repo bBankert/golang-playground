@@ -25,6 +25,10 @@ jobs:
       working-directory: ./rest-api
       run: go build -v ./...
 
+    - name: Generate mocks
+      working-directory: ./rest-api
+      run: mockery --all
+
     - name: Test
       working-directory: ./rest-api
       run: go test -v ./...

@@ -9,7 +9,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(email, userId string) (string, error) {
+type JwtAuthorizer struct{}
+
+func (j *JwtAuthorizer) GenerateToken(email, userId string) (string, error) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
@@ -18,10 +20,18 @@ func GenerateToken(email, userId string) (string, error) {
 			"exp":    time.Now().Add(time.Minute * 5).Unix(),
 		})
 
-	return token.SignedString([]byte(config.Config.JwtSecretKey))
+	appConfig := config.AppConfiguration()
+
+	secretKey, err := appConfig.JwtSecretKey()
+
+	if err != nil {
+		return "", err
+	}
+
+	return token.SignedString([]byte(secretKey))
 }
 
-func ValidateToken(token string) (int64, error) {
+func (j *JwtAuthorizer) ValidateToken(token string) (int64, error) {
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
 		_, correctSigningType := token.Method.(*jwt.SigningMethodHMAC)
 
@@ -29,7 +39,15 @@ func ValidateToken(token string) (int64, error) {
 			return nil, errors.New("invalid token signing method")
 		}
 
-		return []byte(config.Config.JwtSecretKey), nil
+		appConfig := config.AppConfiguration()
+
+		secretKey, err := appConfig.JwtSecretKey()
+
+		if err != nil {
+			return "", err
+		}
+
+		return []byte(secretKey), nil
 	})
 
 	if err != nil {
@@ -55,4 +73,8 @@ func ValidateToken(token string) (int64, error) {
 	}
 
 	return parsedUserId, nil
+}
+
+func NewJwtAuthorizer() *JwtAuthorizer {
+	return &JwtAuthorizer{}
 }

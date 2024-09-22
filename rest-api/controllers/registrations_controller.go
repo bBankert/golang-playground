@@ -27,11 +27,15 @@ func (controller RegistrationsController) RegisterForEvent(context *gin.Context)
 	err := controller.registrationService.CreateRegistration(eventId, userId)
 
 	if err != nil {
-		context.Status(http.StatusInternalServerError)
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Unexpected error occurred",
+		})
 		return
 	}
 
-	context.Status(http.StatusCreated)
+	context.JSON(http.StatusCreated, gin.H{
+		"message": "created registration",
+	})
 
 }
 
@@ -50,11 +54,15 @@ func (controller RegistrationsController) CancelEventRegistration(context *gin.C
 	err := controller.registrationService.DeleteRegistration(eventId, userId)
 
 	if err != nil {
-		context.Status(http.StatusInternalServerError)
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Unexpected error occurred",
+		})
 		return
 	}
 
-	context.Status(http.StatusCreated)
+	context.JSON(http.StatusOK, gin.H{
+		"message": "deleted registration",
+	})
 }
 
 func NewRegistrationsController(registrationService interfaces.IRegistrationService) *RegistrationsController {

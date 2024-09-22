@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"example.com/config"
 	interfaces "example.com/interfaces/controllers"
 	"example.com/routes"
 )
@@ -19,9 +18,7 @@ func (app App) Start(port string) error {
 
 	app.InitializeRoutes(*app.httpHandlers)
 
-	portString := fmt.Sprintf(":%s", config.Config.HttpPort)
-
-	err := app.server.Run(portString)
+	err := app.server.Run(fmt.Sprintf(":%v", port))
 
 	if err != nil {
 		return err

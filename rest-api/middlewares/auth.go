@@ -15,7 +15,9 @@ func Authenticate(context *gin.Context) {
 		return
 	}
 
-	userId, err := lib.ValidateToken(authToken)
+	jwtAuthorizer := lib.NewJwtAuthorizer()
+
+	userId, err := jwtAuthorizer.ValidateToken(authToken)
 
 	if err != nil {
 		context.AbortWithStatus(http.StatusUnauthorized)

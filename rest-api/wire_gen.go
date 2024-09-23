@@ -9,6 +9,7 @@ package main
 import (
 	"example.com/config"
 	"example.com/controllers"
+	"example.com/lib"
 	"example.com/repositories"
 	"example.com/routes"
 	"example.com/services"
@@ -23,8 +24,10 @@ func BuildServer() (*App, error) {
 	eventService := services.NewEventService(eventRepository)
 	eventsController := controllers.NewEventsController(eventService)
 	userRepository := repositories.NewUserRepository(db)
-	userService := services.NewUserService(userRepository)
-	usersController := controllers.NewUsersController(userService)
+	hasher := lib.NewHasher()
+	userService := services.NewUserService(userRepository, hasher)
+	jwtAuthorizer := lib.NewJwtAuthorizer()
+	usersController := controllers.NewUsersController(userService, jwtAuthorizer)
 	registrationRepository := repositories.NewRegistrationRepository(db)
 	registrationService := services.NewRegistrationService(registrationRepository, eventRepository)
 	registrationsController := controllers.NewRegistrationsController(registrationService)

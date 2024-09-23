@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 
+	"example.com/constants"
 	interfaces "example.com/interfaces/repositories"
 )
 
@@ -17,7 +18,7 @@ func (registrationService RegistrationService) CreateRegistration(eventId, userI
 	if err != nil {
 		return err
 	} else if event.Id == 0 {
-		return errors.New("no event exists with provided id")
+		return errors.New(constants.NO_EVENT_FOR_ID_ERROR)
 	}
 
 	err = registrationService.registrationRepository.CreateRegistration(eventId, userId)
@@ -36,7 +37,7 @@ func (registrationService RegistrationService) DeleteRegistration(eventId, userI
 	if err != nil {
 		return err
 	} else if event.Id == 0 {
-		return errors.New("no event exists with provided id")
+		return errors.New(constants.NO_EVENT_FOR_ID_ERROR)
 	}
 
 	err = registrationService.registrationRepository.DeleteRegistration(eventId, userId)

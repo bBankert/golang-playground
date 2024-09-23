@@ -1,18 +1,19 @@
 package services
 
 import (
-	interfaces "example.com/interfaces/repositories"
-	"example.com/lib"
+	libInterfaces "example.com/interfaces/lib"
+	repositoryInterfaces "example.com/interfaces/repositories"
 	"example.com/models"
 )
 
 type UserService struct {
-	userRepository interfaces.IUserRepository
+	userRepository repositoryInterfaces.IUserRepository
+	passwordHasher libInterfaces.IHasher
 }
 
 func (userService UserService) CreateUser(user *models.User) error {
 
-	hashedPassword, err := lib.HashPassword(user.Password)
+	hashedPassword, err := userService.passwordHasher.HashPassword(user.Password)
 
 	if err != nil {
 		return nil
@@ -43,13 +44,14 @@ func (userService UserService) ValidateCredentials(user *models.User) (bool, err
 
 	user.Id = savedUser.Id
 
-	return lib.ValidatePasswordHash(
+	return userService.passwordHasher.ValidatePasswordHash(
 		user.Password,
 		savedUser.Password), nil
 }
 
-func NewUserService(userRepository interfaces.IUserRepository) *UserService {
+func NewUserService(userRepository repositoryInterfaces.IUserRepository, passwordHasher libInterfaces.IHasher) *UserService {
 	return &UserService{
 		userRepository: userRepository,
+		passwordHasher: passwordHasher,
 	}
 }

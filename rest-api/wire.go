@@ -7,8 +7,10 @@ import (
 	"example.com/config"
 	"example.com/controllers"
 	controllerInterfaces "example.com/interfaces/controllers"
+	libInterfaces "example.com/interfaces/lib"
 	repositoryInterfaces "example.com/interfaces/repositories"
 	serviceInterfaces "example.com/interfaces/services"
+	"example.com/lib"
 	"example.com/repositories"
 	"example.com/routes"
 	"example.com/services"
@@ -26,6 +28,11 @@ func BuildServer() (*App, error) {
 		wire.Bind(new(repositoryInterfaces.IRegistrationRepository), new(*repositories.RegistrationRepository)),
 		repositories.NewUserRepository,
 		wire.Bind(new(repositoryInterfaces.IUserRepository), new(*repositories.UserRepository)),
+		//util registration
+		lib.NewHasher,
+		wire.Bind(new(libInterfaces.IHasher), new(*lib.Hasher)),
+		lib.NewJwtAuthorizer,
+		wire.Bind(new(libInterfaces.IJwtAuthorizer), new(*lib.JwtAuthorizer)),
 		//service registration
 		services.NewEventService,
 		wire.Bind(new(serviceInterfaces.IEventService), new(*services.EventService)),

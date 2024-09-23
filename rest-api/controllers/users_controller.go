@@ -5,14 +5,15 @@ import (
 	"net/http"
 	"strconv"
 
-	interfaces "example.com/interfaces/services"
-	"example.com/lib"
+	libInterfaces "example.com/interfaces/lib"
+	serviceInterfaces "example.com/interfaces/services"
 	"example.com/models"
 	"github.com/gin-gonic/gin"
 )
 
 type UsersController struct {
-	userService interfaces.IUserService
+	userService   serviceInterfaces.IUserService
+	jwtAuthorizer libInterfaces.IJwtAuthorizer
 }
 
 func (controller UsersController) CreateUser(context *gin.Context) {
@@ -63,11 +64,11 @@ func (controller UsersController) Login(context *gin.Context) {
 	}
 
 	if !successfulValidation {
-		context.Status(http.StatusUnauthorized)
+		context.JSON(http.StatusUnauthorized, gin.H{})
 		return
 	}
 
-	token, err := lib.GenerateToken(user.Email, strconv.FormatInt(user.Id, 10))
+	token, err := controller.jwtAuthorizer.GenerateToken(user.Email, strconv.FormatInt(user.Id, 10))
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
@@ -82,8 +83,9 @@ func (controller UsersController) Login(context *gin.Context) {
 	})
 }
 
-func NewUsersController(userService interfaces.IUserService) *UsersController {
+func NewUsersController(userService serviceInterfaces.IUserService, jwtAuthorizer libInterfaces.IJwtAuthorizer) *UsersController {
 	return &UsersController{
-		userService: userService,
+		userService:   userService,
+		jwtAuthorizer: jwtAuthorizer,
 	}
 }
